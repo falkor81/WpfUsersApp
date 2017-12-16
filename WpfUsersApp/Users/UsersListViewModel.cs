@@ -27,11 +27,39 @@ namespace WpfUsersApp.Users
         {
             Users = null;
             Users = new ObservableCollection<UserModel>(_usersRepository.GetUsers(this));
+
             _isCollectionDirty = false;
             if (SaveCommand != null)
             {
                 SaveCommand.RaiseCanExecuteChanged();
             }
+            else
+            {
+                SaveCommand = new RelayCommand(OnSave, CanSave);
+            }
+            Users.CollectionChanged += (sender, e) =>
+            {
+                if (e.Action == NotifyCollectionChangedAction.Add ||
+                    e.Action == NotifyCollectionChangedAction.Remove)
+                {
+                    if (e.Action == NotifyCollectionChangedAction.Add)
+                    {
+                        var user = e.NewItems[0] as UserModel;
+                        SelectedUser = user;
+                        user.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(this.PropertyDirty);
+                    }
+
+                    if (e.Action == NotifyCollectionChangedAction.Remove)
+                    {
+                        var user = e.OldItems[0] as UserModel;
+                        SelectedUser = user;
+                        user.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(this.PropertyDirty);
+                    }
+
+                    _isCollectionDirty = true;
+                    SaveCommand.RaiseCanExecuteChanged();
+                }
+            };
         }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
@@ -47,17 +75,6 @@ namespace WpfUsersApp.Users
             _usersRepository = usersRepository;
 
             RefreshUsersCollection();
-
-            SaveCommand = new RelayCommand(OnSave, CanSave);
-            Users.CollectionChanged += (sender, e) =>
-            {
-                if (e.Action == NotifyCollectionChangedAction.Add ||
-                    e.Action == NotifyCollectionChangedAction.Remove)
-                {
-                    _isCollectionDirty = true;
-                    SaveCommand.RaiseCanExecuteChanged();
-                }
-            };
 
             RefreshCommand = new RelayCommand(OnRefresh, () => true);
         }
