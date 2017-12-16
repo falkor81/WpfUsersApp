@@ -15,8 +15,8 @@ namespace WpfUsersApp.Users
         {
             UserModel user = (value as BindingGroup).Items[0] as UserModel;
 
-            string errorMessage;
-            ValidationResult result = user.IsValid(out errorMessage) ? ValidationResult.ValidResult : new ValidationResult(false, errorMessage);
+            var isValid = user.IsValid();
+            ValidationResult result = isValid.valid ? ValidationResult.ValidResult : new ValidationResult(false, isValid.errorMessage);
             return result;
         }
     }

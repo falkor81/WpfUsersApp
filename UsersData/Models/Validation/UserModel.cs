@@ -8,9 +8,9 @@ namespace UsersData.Models
 {
     public partial class UserModel
     {
-        public bool IsValid(out string errorMessage)
+        public (bool valid, string errorMessage) IsValid()
         {
-            errorMessage = string.Empty;
+            string errorMessage = string.Empty;
 
             if (string.IsNullOrEmpty(FirstName))
             {
@@ -19,17 +19,14 @@ namespace UsersData.Models
             else if (string.IsNullOrEmpty(LastName))
             {
                 errorMessage = Message("Last Name");
-                return false;
             }
             else if (string.IsNullOrEmpty(StreetName))
             {
                 errorMessage = Message("Street Name");
-                return false;
             }
             else if (string.IsNullOrEmpty(HouseNumber))
             {
                 errorMessage = Message("House Number");
-                return false;
             }
             else if (string.IsNullOrEmpty(PostalCode))
             {
@@ -44,7 +41,7 @@ namespace UsersData.Models
                 errorMessage = Message("Day Of Birth");
             }
 
-            return string.IsNullOrEmpty(errorMessage) ? true : false;
+            return (string.IsNullOrEmpty(errorMessage) ? true : false, errorMessage);
         }
     }
 }

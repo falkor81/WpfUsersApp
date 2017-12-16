@@ -128,8 +128,7 @@ namespace WpfUsersApp.Users
 
         private bool CanSave()
         {
-            string errorMessage;
-            bool result = SelectedUser?.IsValid(out errorMessage) == true ? _isCollectionDirty : false;
+            bool result = SelectedUser?.IsValid().valid == true ? _isCollectionDirty : false;
             return result;
         }
         #endregion
